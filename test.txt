@@ -19,11 +19,6 @@ if ($chk_login == true) {
         die("Password salah atau sesi tidak valid.");
     }
 }
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
   <title>W3Lcome</title>
   <center>
   <table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
